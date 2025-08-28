@@ -13,6 +13,7 @@ const userRoutes = require('./routes/users');
 const ticketRoutes = require('./routes/tickets');
 const auditRoutes = require('./routes/audit');
 const puntoVentaRoutes = require('./routes/puntoVentaRoutes');
+const impresionRoutes = require('./routes/impresion');
 
 const app = express();
 
@@ -33,10 +34,18 @@ app.use(limiter);
 // CORS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-domain.com'] 
+    ? [
+        'https://feelthecanjefttweb.onrender.com',
+        process.env.CORS_ORIGIN || 'https://feelthecanjefttweb.onrender.com'
+      ]
     : ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

@@ -59,6 +59,24 @@ app.use('/api/audit', auditRoutes);
 app.use('/api/puntos-venta', puntoVentaRoutes);
 app.use('/api/impresion', require('./routes/impresion'));
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    success: true,
+    message: 'Shakira Tickets API - Sistema funcionando correctamente',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/api/auth',
+      users: '/api/users', 
+      tickets: '/api/tickets',
+      audit: '/api/audit',
+      puntosVenta: '/api/puntos-venta',
+      impresion: '/api/impresion'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 

@@ -28,5 +28,3 @@ router.get('/:id/tickets', auth, getTicketsByPuntoVenta);
 router.get('/:id/estadisticas', auth, getEstadisticasPuntoVenta);
 
 module.exports = router;
-
-module.exports = router;

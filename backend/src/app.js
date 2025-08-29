@@ -31,20 +31,34 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS
+// CORS (permitir frontend en Render y localhost en desarrollo)
+const allowRenderWildcard = /\.onrender\.com$/;
+const devOrigins = ['http://localhost:3000', 'http://localhost:5173'];
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        'https://feelthecanjefttweb.onrender.com',
-        process.env.CORS_ORIGIN || 'https://feelthecanjefttweb.onrender.com'
-      ]
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: (origin, callback) => {
+    // Permitir llamadas sin origin (por ejemplo, herramientas internas)
+    if (!origin) return callback(null, true);
+
+    if (process.env.NODE_ENV !== 'production') {
+      return devOrigins.includes(origin)
+        ? callback(null, true)
+        : callback(new Error('Not allowed by CORS'));
+    }
+
+    const allowed = configuredOrigins.includes(origin) || allowRenderWildcard.test(origin);
+    return allowed ? callback(null, true) : callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Handle preflight requests
+// Handle preflight requests explicitly
 app.options('*', cors());
 
 // Body parsing middleware

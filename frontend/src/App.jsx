@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
+import Unauthorized from './components/Unauthorized';
 
 // Pages
 import Login from './pages/Login';
@@ -99,6 +100,9 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
+
+              {/* Página de no autorizado */}
+              <Route path="/unauthorized" element={<Unauthorized />} />
 
               {/* Página 404 */}
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -13,10 +13,12 @@
         const results = document.getElementById('results');
         
         // Test 1: Variable de entorno
-        results.innerHTML += `<p><strong>VITE_API_URL:</strong> ${import.meta.env.VITE_API_URL || 'NO DEFINIDA'}</p>`;
+    // Este archivo es estático; no usa variables de Vite aquí.
+    results.innerHTML += `<p><strong>VITE_API_URL:</strong> NO APLICA EN HTML ESTÁTICO</p>`;
         
         // Test 2: URL construida
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+            // Usa la ruta relativa para aprovechar los rewrites de Render (/api -> backend)
+            const API_BASE_URL = '/api';
         results.innerHTML += `<p><strong>API_BASE_URL:</strong> ${API_BASE_URL}</p>`;
         
         // Test 3: Probar conectividad backend

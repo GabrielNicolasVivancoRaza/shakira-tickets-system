@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap'
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import api from '../services/api';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,19 @@ const Login = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  // 🔥 FUNCIÓN DE TEST DIRECTO
+  const testAPI = async () => {
+    console.log('🔥 TESTING API DIRECT...');
+    try {
+      const response = await api.get('/health');
+      console.log('✅ API TEST SUCCESS:', response.data);
+      alert('API TEST SUCCESS: ' + JSON.stringify(response.data));
+    } catch (error) {
+      console.error('❌ API TEST FAILED:', error);
+      alert('API TEST FAILED: ' + error.message);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -122,6 +136,17 @@ const Login = () => {
                     size="lg"
                   >
                     {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                  </Button>
+                </div>
+                
+                {/* 🔥 BOTÓN DE TEST DIRECTO */}
+                <div className="d-grid mt-2">
+                  <Button 
+                    variant="danger" 
+                    onClick={testAPI}
+                    size="sm"
+                  >
+                    🔥 TEST API CONNECTION
                   </Button>
                 </div>
               </Form>

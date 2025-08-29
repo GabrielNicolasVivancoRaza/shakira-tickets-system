@@ -2,6 +2,10 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
 
+console.log('🔍 DEBUG - VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('🔍 DEBUG - API_BASE_URL:', API_BASE_URL);
+console.log('🔍 DEBUG - Environment:', import.meta.env.MODE);
+
 // Crear instancia de axios
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -29,6 +33,13 @@ const getCacheType = (url) => {
 // Interceptor optimizado para agregar token de autenticación y cache inteligente
 api.interceptors.request.use(
   (config) => {
+    console.log('🚀 API REQUEST:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: config.baseURL + config.url
+    });
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -42,7 +53,7 @@ api.interceptors.request.use(
       const cacheDuration = CACHE_DURATIONS[cacheType];
       
       if (cached && Date.now() - cached.timestamp < cacheDuration) {
-        console.log(`Cache hit for ${config.url}`);
+        console.log(`📦 Cache hit for ${config.url}`);
         config.adapter = () => Promise.resolve({
           ...cached.data,
           headers: { ...cached.data.headers, 'x-cache': 'HIT' }
@@ -53,6 +64,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('❌ API REQUEST ERROR:', error);
     return Promise.reject(error);
   }
 );
@@ -60,6 +72,13 @@ api.interceptors.request.use(
 // Interceptor optimizado para manejar respuestas y cache
 api.interceptors.response.use(
   (response) => {
+    console.log('✅ API RESPONSE:', {
+      status: response.status,
+      url: response.config.url,
+      method: response.config.method?.toUpperCase(),
+      data: response.data ? 'Data received' : 'No data'
+    });
+
     // Guardar en cache respuestas GET exitosas con TTL apropiado
     if (response.config.method === 'get' && response.status === 200 && !response.headers['x-cache']) {
       const token = localStorage.getItem('token');
@@ -70,12 +89,21 @@ api.interceptors.response.use(
         timestamp: Date.now()
       });
       
-      console.log(`Cache set for ${response.config.url}`);
+      console.log(`📦 Cache set for ${response.config.url}`);
     }
 
     return response;
   },
   (error) => {
+    console.error('❌ API RESPONSE ERROR:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      url: error.config?.url,
+      method: error.config?.method?.toUpperCase(),
+      message: error.message,
+      fullURL: error.config?.baseURL + error.config?.url
+    });
+
     if (error.response?.status === 401) {
       // Limpiar cache y datos de usuario
       cache.clear();

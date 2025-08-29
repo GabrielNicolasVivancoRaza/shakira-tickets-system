@@ -17,6 +17,8 @@ services:
         generateValue: true
       - key: DEFAULT_PASSWORD
         value: FTT2025
+      - key: CORS_ORIGIN
+        value: https://feelthecanjefttweb.onrender.com
 
   # Frontend Service  
   - type: web
@@ -27,10 +29,10 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     rootDir: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: shakira-backend
-          property: url
-        sync: false
+        value: https://feelthecanjeftt.onrender.com/api

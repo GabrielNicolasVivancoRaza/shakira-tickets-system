@@ -102,16 +102,9 @@ const TicketsPage = () => {
 
   const fetchPuntosVenta = async () => {
     try {
-      const response = await fetch('http://localhost:5002/api/puntos-venta', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        setPuntosVenta(result.data);
+      const response = await api.get('/puntos-venta');
+      if (response.data.success) {
+        setPuntosVenta(response.data.data);
       }
     } catch (error) {
       console.error('Error fetching puntos de venta:', error);
@@ -125,35 +118,26 @@ const TicketsPage = () => {
     try {
       setLoading(true);
       setError('');
-      const params = new URLSearchParams({
+      const params = {
         page: pagination.page,
         limit: pagination.limit,
         ...(search.trim() && { search: search.trim() }),
         ...(seatSearch.trim() && { seatSearch: seatSearch.trim() }),
         ...(sortBy && { sortBy }),
         ...(sortBy && { sortOrder })
-      });
+      };
 
-      const response = await fetch(
-        `http://localhost:5002/api/puntos-venta/${selectedPuntoVenta}/tickets?${params}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await api.get(`/puntos-venta/${selectedPuntoVenta}/tickets`, { params });
 
-      const result = await response.json();
-      if (result.success) {
-        setTickets(result.data.tickets);
+      if (response.data.success) {
+        setTickets(response.data.data.tickets);
         setPagination(prev => ({
           ...prev,
-          total: result.data.pagination.totalItems,
-          pages: result.data.pagination.totalPages
+          total: response.data.data.pagination.totalItems,
+          pages: response.data.data.pagination.totalPages
         }));
       } else {
-        setError(result.message || 'Error al cargar tickets');
+        setError(response.data.message || 'Error al cargar tickets');
       }
     } catch (error) {
       console.error('Error fetching tickets:', error);
@@ -167,35 +151,26 @@ const TicketsPage = () => {
     try {
       setLoading(true);
       setError('');
-      const params = new URLSearchParams({
+      const params = {
         page: pagination.page,
         limit: pagination.limit,
         ...(search.trim() && { search: search.trim() }),
         ...(seatSearch.trim() && { seatSearch: seatSearch.trim() }),
         ...(sortBy && { sortBy }),
         ...(sortBy && { sortOrder })
-      });
+      };
 
-      const response = await fetch(
-        `http://localhost:5002/api/puntos-venta/staff/tickets?${params}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await api.get('/puntos-venta/staff/tickets', { params });
 
-      const result = await response.json();
-      if (result.success) {
-        setTickets(result.data.tickets);
+      if (response.data.success) {
+        setTickets(response.data.data.tickets);
         setPagination(prev => ({
           ...prev,
-          total: result.data.pagination.totalItems,
-          pages: result.data.pagination.totalPages
+          total: response.data.data.pagination.totalItems,
+          pages: response.data.data.pagination.totalPages
         }));
       } else {
-        setError(result.message || 'Error al cargar tickets');
+        setError(response.data.message || 'Error al cargar tickets');
       }
     } catch (error) {
       console.error('Error fetching tickets for staff:', error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const PuntosVenta = () => {
   const { user, token } = useAuth();
@@ -40,18 +41,12 @@ const PuntosVenta = () => {
   const fetchPuntosVenta = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5002/api/puntos-venta', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await api.get('/puntos-venta');
 
-      const result = await response.json();
-      if (result.success) {
-        setPuntosVenta(result.data);
+      if (response.data.success) {
+        setPuntosVenta(response.data.data);
       } else {
-        setError(result.message || 'Error al cargar puntos de venta');
+        setError(response.data.message || 'Error al cargar puntos de venta');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -70,29 +65,19 @@ const PuntosVenta = () => {
     }
 
     try {
-      const url = editingPunto 
-        ? `http://localhost:5002/api/puntos-venta/${editingPunto._id}`
-        : 'http://localhost:5002/api/puntos-venta';
+      let response;
+      if (editingPunto) {
+        response = await api.put(`/puntos-venta/${editingPunto._id}`, formData);
+      } else {
+        response = await api.post('/puntos-venta', formData);
+      }
       
-      const method = editingPunto ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
+      if (response.data.success) {
         fetchPuntosVenta();
         handleCloseModal();
         setError('');
       } else {
-        setError(result.message || 'Error al guardar punto de venta');
+        setError(response.data.message || 'Error al guardar punto de venta');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -116,21 +101,13 @@ const PuntosVenta = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5002/api/puntos-venta/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const result = await response.json();
+      const response = await api.delete(`/puntos-venta/${id}`);
       
-      if (result.success) {
+      if (response.data.success) {
         fetchPuntosVenta();
         setError('');
       } else {
-        setError(result.message || 'Error al eliminar punto de venta');
+        setError(response.data.message || 'Error al eliminar punto de venta');
       }
     } catch (error) {
       console.error('Error:', error);

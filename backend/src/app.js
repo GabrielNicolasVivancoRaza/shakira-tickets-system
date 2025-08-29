@@ -95,11 +95,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+// API Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'API_OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    cors: req.headers.origin || 'No origin header'
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
+  console.log(`404 - Ruta solicitada: ${req.method} ${req.originalUrl}`);
+  console.log(`Headers: ${JSON.stringify(req.headers)}`);
   res.status(404).json({
     success: false,
-    message: 'Ruta no encontrada'
+    message: 'Ruta no encontrada',
+    requestedPath: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString()
   });
 });
 

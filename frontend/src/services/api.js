@@ -1,8 +1,11 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+// Obtener base URL sin /api al final
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = BASE_URL.endsWith('/api') ? BASE_URL : `${BASE_URL}/api`;
 
 console.log('🔍 DEBUG - VITE_API_URL:', import.meta.env.VITE_API_URL);
+console.log('🔍 DEBUG - BASE_URL:', BASE_URL);
 console.log('🔍 DEBUG - API_BASE_URL:', API_BASE_URL);
 console.log('🔍 DEBUG - Environment:', import.meta.env.MODE);
 

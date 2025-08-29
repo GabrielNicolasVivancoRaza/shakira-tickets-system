@@ -22,13 +22,18 @@ const Login = () => {
   // 🔥 FUNCIÓN DE TEST DIRECTO
   const testAPI = async () => {
     console.log('🔥 TESTING API DIRECT...');
+    console.log('🔍 API BASE URL:', api.defaults.baseURL);
+    console.log('🔍 Full URL will be:', api.defaults.baseURL + '/health');
+    
     try {
       const response = await api.get('/health');
       console.log('✅ API TEST SUCCESS:', response.data);
       alert('API TEST SUCCESS: ' + JSON.stringify(response.data));
     } catch (error) {
       console.error('❌ API TEST FAILED:', error);
-      alert('API TEST FAILED: ' + error.message);
+      console.error('❌ Error config:', error.config);
+      console.error('❌ Error response:', error.response?.data);
+      alert('API TEST FAILED: ' + error.message + '\n\nURL: ' + error.config?.url + '\nBase: ' + error.config?.baseURL);
     }
   };
 

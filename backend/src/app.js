@@ -54,9 +54,27 @@ app.use(express.urlencoded({ extended: true }));
 // Trust proxy for rate limiting
 app.set('trust proxy', 1);
 
+// Health check endpoints (BEFORE other routes)
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'API_OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    cors: req.headers.origin || 'No origin header'
+  });
+});
+
 // Logging middleware
 app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path} - ${req.ip}`);
+  logger.info(`${req.method} ${req.originalUrl} - ${req.ip}`);
   next();
 });
 
@@ -83,25 +101,6 @@ app.get('/', (req, res) => {
       puntosVenta: '/api/puntos-venta',
       impresion: '/api/impresion'
     }
-  });
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-
-// API Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'API_OK', 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    cors: req.headers.origin || 'No origin header'
   });
 });
 

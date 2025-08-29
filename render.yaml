@@ -31,10 +31,14 @@ services:
     rootDir: frontend
     headers:
       - path: /*
-        headers:
-          X-Frame-Options: DENY
-          X-Content-Type-Options: nosniff
-          Cache-Control: no-cache
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Cache-Control
+        value: no-cache
     routes:
       - type: rewrite
         source: /api/*
